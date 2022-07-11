@@ -25,7 +25,19 @@ jobs:
       - checkout # Invoke jobs via workflows
       - run:
           name: "Say Welcome"
-          command: "echo Welcome"
+          command: echo "Welcome" > ~/output.txt
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - output.txt
+
+  print-output-file:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run: cat ~/output.txt
 
   print-name:
     docker:
@@ -34,14 +46,11 @@ jobs:
       - run:
           command: echo $USERNAME
 workflows:
-  say-hello-workflow:
+  myworkflows:
     jobs:
       - say-hello
-
-  say-welcome-workflow:
-    jobs:
-      - say-welcome
-
-  print-name-workflow:
-    jobs:
       - print-name
+      - say-welcome
+      - print-output-file:
+          requires:
+            - say-welcome
