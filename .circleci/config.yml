@@ -11,9 +11,8 @@ commands:
     parameters:
       args:
         type: string
-        default: "Hello"
     steps:
-      - run: echo ${CIRCLE_WORKFLOW_ID}
+      - run: echo <<parameters.args>>
 jobs:
   say-hello:
     # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
@@ -61,7 +60,7 @@ jobs:
       - image: cimg/base:stable
     steps:
       - print_pipeline_id:
-        args: ${CIRCLE_WORKFLOW_ID}
+        args: << pipeline.id >>
 
 workflows:
   myworkflows:
