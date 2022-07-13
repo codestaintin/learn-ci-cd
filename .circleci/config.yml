@@ -11,11 +11,10 @@ commands:
     parameters:
       args:
         type: string
-        default: "Hello"
     steps:
-      - run: echo ${CIRCLE_WORKFLOW_ID}
+      - run: echo "here--->" ${CIRCLE_WORKFLOW_ID}
 jobs:
-  say-hello:
+  say_hello:
     # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
     # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
     docker:
@@ -28,7 +27,7 @@ jobs:
           name: "Say hello"
           command: "echo Hello, World!"
 
-  say-welcome:
+  say_welcome:
     docker:
       - image: cimg/base:stable
     steps:
@@ -41,7 +40,7 @@ jobs:
           paths:
             - output.txt
 
-  print-output-file:
+  print_output_file:
     docker:
       - image: cimg/base:stable
     steps:
@@ -49,27 +48,38 @@ jobs:
           at: ~/
       - run: cat ~/output.txt
 
-  print-name:
+  print_name:
     docker:
       - image: cimg/base:stable
     steps:
       - run:
           command: echo $USERNAME
 
-  print-id:
+  print_id:
     docker:
       - image: cimg/base:stable
     steps:
       - print_pipeline_id:
-        args: ${CIRCLE_WORKFLOW_ID}
+          args: ${CIRCLE_WORKFLOW_ID}
+
+  failed_run:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - run: exit 1
+      - run:
+          name: on error
+          command: echo "Hello Error"
+          when: on_fail
 
 workflows:
   myworkflows:
     jobs:
-      - say-hello
-      - print-name
-      - say-welcome
-      - print-output-file:
+      - say_hello
+      - print_name
+      - say_welcome
+      - print_output_file:
           requires:
-            - say-welcome
-      - print-id
+            - say_welcome
+      - print_id
+      - failed_run
